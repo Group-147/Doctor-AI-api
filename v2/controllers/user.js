@@ -1,7 +1,7 @@
 const User = require("../models/user");
 const { hash, compare } = require("bcryptjs");
-const { createToken } = require("../utils/tokens");
-const { COOKIE_NAME } = require("../utils/constants");
+const { createToken } = require("../../utils/tokens");
+const { COOKIE_NAME } = require("../../utils/constants");
 
 exports.getAllUsers = async (req, res, next) => {
   try {
@@ -44,7 +44,7 @@ exports.signup = async (req, res, next) => {
 
     res.cookie(COOKIE_NAME, token, { path: "/", domain: "localhost", expires, httpOnly: true, signed: true });
 
-    return res.status(201).json({ success: true, id: user._id.toString() });
+    return res.status(201).json({ success: true, data: { name: user.name, email: user.email }});
   } catch (error) {
     console.log(`error from signup user: ${error}`);
     return res.status(500).json({ success: false, error: error.message });
@@ -79,9 +79,51 @@ exports.login = async (req, res, next) => {
 
     res.cookie(COOKIE_NAME, token, { path: "/", domain: "localhost", expires, httpOnly: true, signed: true });
 
-    return res.status(200).json({ success: true, id: user._id.toString() });
+    return res.status(200).json({ success: true, data: { name: user.name, email: user.email } });
   }catch(error){
     console.log(`error from login user: ${error}`);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+
+
+
+
+exports.verifyUser = async (req, res, next) => {
+  try{
+    // user login
+    const user = await User.findById(res.locals.jwtData.id);
+
+    if (!user) { return res.status(401).send("User not registered or token malfunctioned!") };
+
+    if( user.id != res.locals.jwtData.id ) { return res.status(401).send("Permissions didn't match!") };
+
+    return res.status(200).json({ success: true, data: {name: user.name, email: user.email } });
+  }catch{
+    console.log(`error from verifyToken`, error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+
+
+
+
+exports.logout = async (req, res, next) => {
+  try{
+
+    const user = await User.findById(res.locals.jwtData.id);
+
+    if (!user) { return res.status(401).send("User not registered or token malfunctioned!") };
+
+    if( user.id != res.locals.jwtData.id ) { return res.status(401).send("Permissions didn't match!") };
+
+    res.clearCookie(COOKIE_NAME, { domain: "localhost", httpOnly: true, signed: true, path: "/"  });
+
+    return res.status(200).json({ success: true, message: "user successfully logged out! :)" });
+  }catch{
+    console.log(`error from verifyToken`, error);
     return res.status(500).json({ success: false, error: error.message });
   }
 }

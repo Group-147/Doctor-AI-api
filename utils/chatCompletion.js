@@ -21,7 +21,7 @@ require("dotenv").config({ path: "./.env" });
 
 // Initialize the OpenAI instance with API key
 const llm = new ChatOpenAI({
-  openAIApiKey: "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",
+  openAIApiKey: "",
   modelName: "gpt-3.5-turbo",
   temperature: 0,
 });
@@ -30,24 +30,22 @@ const llm = new ChatOpenAI({
 const memory = new BufferWindowMemory({ k: 2 });
 
 const tools = [
-  // new BraveSearch("BSAfk-9zA7iMBfvOtpoJbLW1jsvx7yG"),
   new BingSerpAPI(
-    "6bda49fb90cb9408cfcb753e833de25f1199a7a0199cfc81a7f78ff17840c10a",
+    "",
     {
       q: "medical advices",
       count: 10,
     }
   ),
-  // new GoogleCustomSearch("AIzaSyCQbaJLl-A3xj8C90TS7w_cYYQNdZA9fgA", "66bfaf9490f3e474e"),
   new SerpAPI(
-    "6bda49fb90cb9408cfcb753e833de25f1199a7a0199cfc81a7f78ff17840c10a"
+    ""
   ),
   new WikipediaQueryRun({
     topKResults: 3,
     maxDocContentLength: 4000,
   }),
   new WolframAlphaTool({
-    appid: "8A2W6A-6YEQVV2K7H",
+    appid: "",
   }),
 ];
 

@@ -34,7 +34,7 @@ const { Calculator } = require("langchain/tools/calculator");
 // Initialize a memory
 const memory = new BufferWindowMemory({ k: 2 });
 const model = new ChatOpenAI({
-  openAIApiKey: "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",
+  openAIApiKey: process.env.OPEN_AI_SECRET,
   modelName: "gpt-3.5-turbo",
   temperature: 0,
 });
